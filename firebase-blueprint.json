@@ -1,0 +1,65 @@
+{
+  "entities": {
+    "SurveyResult": {
+      "title": "Survey Result",
+      "description": "A completed survey from a participant.",
+      "type": "object",
+      "properties": {
+        "participantId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "responses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "topicId": { "type": "string" },
+              "textType": { "type": "string", "enum": ["ai", "human"] },
+              "nasaTlx": {
+                "type": "object",
+                "properties": {
+                  "fluency": { "type": "number" },
+                  "cognitiveLoad": { "type": "number" },
+                  "trust": { "type": "number" }
+                }
+              },
+              "answers": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "questionId": { "type": "string" },
+                    "answer": { "type": "string" },
+                    "isCorrect": { "type": "boolean" },
+                    "type": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "required": ["participantId", "timestamp", "responses"]
+    },
+    "User": {
+      "title": "User",
+      "description": "A user of the application.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "user"] }
+      },
+      "required": ["uid", "email", "role"]
+    }
+  },
+  "firestore": {
+    "/surveyResults/{resultId}": {
+      "schema": "SurveyResult",
+      "description": "Collection of all survey results."
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection of user profiles."
+    }
+  }
+}

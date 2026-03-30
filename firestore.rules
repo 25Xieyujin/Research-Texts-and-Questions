@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: surveyResults
+    // Document ID: auto-generated
+    // Fields:
+    //   - participantId: string (required)
+    //   - timestamp: timestamp (required)
+    //   - responses: list of objects (required)
+    //
+    // Collection: users
+    // Document ID: userId (uid)
+    // Fields:
+    //   - uid: string (required)
+    //   - email: string (required)
+    //   - role: string (required, 'admin' or 'user')
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "xyujin674@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidSurveyResult(data) {
+      return data.participantId is string &&
+             data.timestamp is timestamp &&
+             data.responses is list &&
+             data.responses.size() == 2;
+    }
+
+    // Survey Results:
+    // - Anyone can create a result (participants don't need to log in)
+    // - Only admins can read/list results
+    match /surveyResults/{resultId} {
+      allow create: if isValidSurveyResult(request.resource.data);
+      allow read, list: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    // Users:
+    // - Users can read their own profile
+    // - Admins can read all profiles
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow create, update: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow delete: if isAdmin();
+    }
+  }
+}
