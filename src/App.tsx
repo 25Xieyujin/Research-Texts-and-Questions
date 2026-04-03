@@ -3,7 +3,7 @@ import { auth, db, signIn, logOut } from './firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { collection, addDoc, getDocs, query, orderBy, Timestamp, deleteDoc, doc } from 'firebase/firestore';
 import { TOPICS } from './constants';
-import { SurveyResult, TextResponse, NASA_TLX, QuestionResponse, TopicText } from './types';
+import { SurveyResult, TextResponse, NASA_TLX, QuestionResponse, TopicText, Demographics } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   BookOpen, 
@@ -84,10 +84,15 @@ const ADMIN_EMAIL = "xyujin674@gmail.com";
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [step, setStep] = useState<'welcome' | 'reading' | 'nasa' | 'questions' | 'complete' | 'admin'>('welcome');
+  const [step, setStep] = useState<'welcome' | 'demographics' | 'reading' | 'nasa' | 'questions' | 'complete' | 'admin'>('welcome');
   const [currentTopicIndex, setCurrentTopicIndex] = useState(0);
   const [assignedTexts, setAssignedTexts] = useState<{ topicId: string; text: TopicText }[]>([]);
   const [responses, setResponses] = useState<TextResponse[]>([]);
+  const [demographics, setDemographics] = useState<Demographics>({
+    age: '',
+    gender: '',
+    raceEthnicity: ''
+  });
   
   // Current step state
   const [currentNASA, setCurrentNASA] = useState<NASA_TLX>({ fluency: 4, cognitiveLoad: 4, trust: 4 });
@@ -173,6 +178,9 @@ export default function App() {
     const headers = [
       "Participant ID",
       "Timestamp",
+      "Age",
+      "Gender",
+      "Race/Ethnicity",
       "Topic 1 ID",
       "Topic 1 Type",
       "Topic 1 Fluency",
@@ -196,7 +204,10 @@ export default function App() {
     const rows = adminResults.map(result => {
       const row = [
         result.participantId,
-        result.timestamp?.toDate().toISOString()
+        result.timestamp?.toDate().toISOString(),
+        `"${result.demographics?.age || ''}"`,
+        `"${result.demographics?.gender || ''}"`,
+        `"${result.demographics?.raceEthnicity || ''}"`
       ];
 
       result.responses.forEach(resp => {
@@ -233,6 +244,10 @@ export default function App() {
   };
 
   const startSurvey = () => {
+    setStep('demographics');
+  };
+
+  const handleDemographicsSubmit = () => {
     // Randomly assign texts: 
     // Participant reads 2 topics. For each topic, randomly pick AI or Human.
     // Ensure they get one of each type if possible, or just random.
@@ -291,7 +306,8 @@ export default function App() {
         await addDoc(collection(db, 'surveyResults'), {
           participantId: `p_${Math.random().toString(36).substr(2, 9)}`,
           timestamp: Timestamp.now(),
-          responses: newResponses
+          responses: newResponses,
+          demographics: demographics
         });
         setStep('complete');
       } catch (error) {
@@ -361,6 +377,11 @@ export default function App() {
                         <span className="text-gray-400 text-sm flex items-center gap-1">
                           <Clock size={14} /> {result.timestamp?.toDate().toLocaleString()}
                         </span>
+                      </div>
+                      <div className="flex items-center gap-4 text-xs font-medium text-gray-500">
+                        <span>Age: {result.demographics?.age}</span>
+                        <span>Gender: {result.demographics?.gender}</span>
+                        <span>Race/Ethnicity: {result.demographics?.raceEthnicity}</span>
                       </div>
                       <button 
                         onClick={() => result.id && handleDeleteResult(result.id)}
@@ -515,6 +536,73 @@ export default function App() {
           </motion.div>
         )}
 
+        {step === 'demographics' && (
+          <motion.div 
+            key="demographics"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="max-w-2xl mx-auto px-6 py-12"
+          >
+            <ProgressBar current={1} total={7} />
+            <div className="mb-10 text-center">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Demographic Information</h2>
+              <p className="text-gray-500">Please provide some basic information about yourself. This data is collected anonymously.</p>
+            </div>
+            
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Age</label>
+                <input 
+                  type="text" 
+                  value={demographics.age}
+                  onChange={(e) => setDemographics({ ...demographics, age: e.target.value })}
+                  placeholder="e.g. 25"
+                  className="w-full p-4 rounded-xl border-2 border-gray-100 focus:border-indigo-600 focus:outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Gender</label>
+                <select 
+                  value={demographics.gender}
+                  onChange={(e) => setDemographics({ ...demographics, gender: e.target.value })}
+                  className="w-full p-4 rounded-xl border-2 border-gray-100 focus:border-indigo-600 focus:outline-none transition-all bg-white"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Non-binary">Non-binary</option>
+                  <option value="Prefer not to say">Prefer not to say</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Race/Ethnicity</label>
+                <input 
+                  type="text" 
+                  value={demographics.raceEthnicity}
+                  onChange={(e) => setDemographics({ ...demographics, raceEthnicity: e.target.value })}
+                  placeholder="e.g. White, Black, Asian, Hispanic, etc."
+                  className="w-full p-4 rounded-xl border-2 border-gray-100 focus:border-indigo-600 focus:outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <button 
+              onClick={handleDemographicsSubmit}
+              disabled={!demographics.age || !demographics.gender || !demographics.raceEthnicity}
+              className={cn(
+                "w-full mt-10 py-5 rounded-2xl font-bold text-xl transition-all shadow-lg flex items-center justify-center gap-2",
+                (!demographics.age || !demographics.gender || !demographics.raceEthnicity)
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100"
+              )}
+            >
+              Continue to Study <ChevronRight />
+            </button>
+          </motion.div>
+        )}
+
         {step === 'reading' && (
           <motion.div 
             key="reading"
@@ -523,7 +611,7 @@ export default function App() {
             exit={{ opacity: 0 }}
             className="max-w-3xl mx-auto px-6 py-12"
           >
-            <ProgressBar current={currentTopicIndex * 3 + 1} total={6} />
+            <ProgressBar current={currentTopicIndex * 3 + 2} total={7} />
             <div className="mb-10">
               <span className="text-indigo-600 font-bold uppercase tracking-widest text-xs mb-2 block">
                 Topic {currentTopicIndex + 1} of 2
@@ -554,7 +642,7 @@ export default function App() {
             exit={{ opacity: 0, x: -20 }}
             className="max-w-2xl mx-auto px-6 py-12"
           >
-            <ProgressBar current={currentTopicIndex * 3 + 2} total={6} />
+            <ProgressBar current={currentTopicIndex * 3 + 3} total={7} />
             <div className="mb-10 text-center">
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Text Evaluation</h2>
               <p className="text-gray-500">Please rate the text you just read on the following scales.</p>
@@ -598,7 +686,7 @@ export default function App() {
             exit={{ opacity: 0, x: -20 }}
             className="max-w-3xl mx-auto px-6 py-12"
           >
-            <ProgressBar current={currentTopicIndex * 3 + 3} total={6} />
+            <ProgressBar current={currentTopicIndex * 3 + 4} total={7} />
             <div className="mb-10">
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Comprehension Check</h2>
               <p className="text-gray-500">Answer the following questions based on the text.</p>

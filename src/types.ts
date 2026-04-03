@@ -18,11 +18,18 @@ export interface TextResponse {
   answers: QuestionResponse[];
 }
 
+export interface Demographics {
+  age: string;
+  gender: string;
+  raceEthnicity: string;
+}
+
 export interface SurveyResult {
   id?: string;
   participantId: string;
   timestamp: any; // Firestore Timestamp
   responses: TextResponse[];
+  demographics: Demographics;
 }
 
 export interface UserProfile {

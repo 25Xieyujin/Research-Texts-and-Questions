@@ -36,7 +36,11 @@ service cloud.firestore {
       return data.participantId is string &&
              data.timestamp is timestamp &&
              data.responses is list &&
-             data.responses.size() == 2;
+             data.responses.size() == 2 &&
+             data.demographics is map &&
+             data.demographics.age is string &&
+             data.demographics.gender is string &&
+             data.demographics.raceEthnicity is string;
     }
 
     // Survey Results:

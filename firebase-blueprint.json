@@ -36,9 +36,18 @@
               }
             }
           }
+        },
+        "demographics": {
+          "type": "object",
+          "properties": {
+            "age": { "type": "string" },
+            "gender": { "type": "string" },
+            "raceEthnicity": { "type": "string" }
+          },
+          "required": ["age", "gender", "raceEthnicity"]
         }
       },
-      "required": ["participantId", "timestamp", "responses"]
+      "required": ["participantId", "timestamp", "responses", "demographics"]
     },
     "User": {
       "title": "User",
