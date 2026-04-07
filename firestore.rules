@@ -2,62 +2,71 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // ===============================================================
-    // Assumed Data Model
-    // ===============================================================
-    //
-    // Collection: surveyResults
-    // Document ID: auto-generated
-    // Fields:
-    //   - participantId: string (required)
-    //   - timestamp: timestamp (required)
-    //   - responses: list of objects (required)
-    //
-    // Collection: users
-    // Document ID: userId (uid)
-    // Fields:
-    //   - uid: string (required)
-    //   - email: string (required)
-    //   - role: string (required, 'admin' or 'user')
-    //
-    // ===============================================================
-
     // Helper Functions
+    // ===============================================================
     function isAuthenticated() {
       return request.auth != null;
     }
-
+    
     function isAdmin() {
-      return isAuthenticated() &&
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
-         (request.auth.token.email == "xyujin674@gmail.com" && request.auth.token.email_verified == true));
+      return isAuthenticated() && 
+        (request.auth.token.email == "xyujin674@gmail.com");
     }
 
-    function isValidSurveyResult(data) {
-      return data.participantId is string &&
-             data.timestamp is timestamp &&
-             data.responses is list &&
-             data.responses.size() == 2 &&
-             data.demographics is map &&
-             data.demographics.age is string &&
-             data.demographics.gender is string &&
-             data.demographics.raceEthnicity is string;
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Survey Results:
-    // - Anyone can create a result (participants don't need to log in)
-    // - Only admins can read/list results
-    match /surveyResults/{resultId} {
-      allow create: if isValidSurveyResult(request.resource.data);
-      allow read, list: if isAdmin();
-      allow update, delete: if isAdmin();
+    function isValidAssessment(data) {
+      return data.userId is string &&
+             data.textId is string &&
+             data.textVersion is string &&
+             data.answers is list &&
+             data.totalScore is number &&
+             data.thinkingLevel is string &&
+             data.submittedAt is timestamp &&
+             data.demographics is map;
     }
 
-    // Users:
-    // - Users can read their own profile
-    // - Admins can read all profiles
+    function isValidAnnotation(data) {
+      return data.assessmentId is string &&
+             data.userId is string &&
+             data.textId is string &&
+             data.sentenceId is string &&
+             data.textSpan is string &&
+             data.problems is list &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    // Assessments
+    match /assessments/{assessmentId} {
+      allow read: if isAdmin();
+      allow create: if isValidAssessment(request.resource.data);
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Annotations
+    match /annotations/{annotationId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && 
+                      request.resource.data.userId == request.auth.uid &&
+                      isValidAnnotation(request.resource.data);
+      allow update: if (isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid)) &&
+                      isValidAnnotation(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Users
     match /users/{userId} {
-      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
-      allow create, update: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow read: if isAdmin() || isOwner(userId);
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isAdmin();
       allow delete: if isAdmin();
     }
   }

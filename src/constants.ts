@@ -1,164 +1,153 @@
-import { Topic } from './types';
+import { TextContent, Question } from './types';
 
-export const TOPICS: Topic[] = [
+export const PROBLEM_CATEGORIES = [
+  { id: 'EVIDENCE', name: 'Lack of Evidence', definition: 'Assertions without supporting data or research' },
+  { id: 'LOGIC', name: 'Logical Gap', definition: 'Incomplete reasoning in the A→B transition' },
+  { id: 'ASSUMPTION', name: 'Unstated Assumption', definition: 'Implicit premises that are not explicitly stated' },
+  { id: 'SCOPE', name: 'Unclear Scope', definition: 'Overgeneralization or limited applicability' },
+  { id: 'MISSING_INFO', name: 'Missing Information', definition: 'Lack of critical background context' },
+  { id: 'VAGUE', name: 'Vague Language', definition: 'Ambiguous terms or unclear metaphors' },
+] as const;
+
+export const TEXTS: TextContent[] = [
   {
-    id: 'topic1',
-    title: 'Refeeding Syndrome',
-    texts: {
-      human: {
-        id: 't1h',
-        title: 'Refeeding Syndrome (Human)',
-        type: 'human',
-        content: `Refeeding syndrome can happen when somebody who is malnourished begins feeding again. Malnourished means your body is deprived of nutrients. When your body tries to metabolize nutrients again, severe shifts — related to electrolyte deficiencies — can occur in your body’s chemistry. They can cause dangerous complications, affecting your muscles, lungs, heart and brain. When your body is starved for nutrients, it makes certain changes to adapt. It changes its metabolism — the way it converts food into energy. Instead of carbohydrates from food, your body metabolizes its own fat and muscle. Metabolism also slows down. Your resting metabolic rate — how much energy you spend while at rest — reduces by as much as 20%. This type of metabolism takes fewer resources. It doesn't use micronutrients — vitamins, minerals and electrolytes — the way normal metabolism does. But when refeeding begins, normal carbohydrate metabolism resumes. Your body reaches deep into its pockets for the micronutrients it needs to get the job done. If your stores are too low, now is when you will feel the effects.`
-      },
-      ai: {
-        id: 't1a',
-        title: 'Refeeding Syndrome (AI)',
-        type: 'ai',
-        content: `Refeeding syndrome develops when a person who has been lacking proper nutrition begins eating again. In a malnourished state, the body adjusts by slowing its metabolism and relying on fat and muscle instead of carbohydrates for energy. This adaptation reduces the need for essential micronutrients such as vitamins and electrolytes. However, once food intake resumes, the body shifts back to processing carbohydrates. This sudden change increases the demand for micronutrients, which can overwhelm the body if its nutrient stores are depleted. As a result, significant electrolyte imbalances may occur, leading to serious complications that can impact vital organs, including the heart, lungs, muscles, and brain.`
-      }
-    },
-    questions: [
-      {
-        id: 't1q1',
-        type: 'comprehension',
-        text: 'Why can refeeding syndrome become dangerous after a malnourished person starts eating again?',
-        options: [
-          'Because the body cannot digest food anymore',
-          'Because the body suddenly needs nutrients that are not available',
-          'Because metabolism permanently stops',
-          'Because fat and muscle increase too quickly'
-        ],
-        correctAnswer: 'Because the body suddenly needs nutrients that are not available'
-      },
-      {
-        id: 't1q2',
-        type: 'inference',
-        text: "What is the main purpose of the body's metabolic slowdown during starvation?",
-        options: [
-          'To improve digestion efficiency',
-          'To store extra carbohydrates',
-          'To conserve energy and resources',
-          'To increase vitamin usage'
-        ],
-        correctAnswer: 'To conserve energy and resources'
-      },
-      {
-        id: 't1q3',
-        type: 'critical',
-        text: 'Which assumption explains why refeeding causes problems in malnourished individuals?',
-        options: [
-          'The body has unlimited nutrient reserves',
-          'The body cannot switch energy sources',
-          'The body’s stored micronutrients may be insufficient',
-          'The body prefers fat over carbohydrates'
-        ],
-        correctAnswer: 'The body’s stored micronutrients may be insufficient'
-      },
-      {
-        id: 't1q4',
-        type: 'critical',
-        text: 'If a patient has normal electrolyte levels before refeeding, what is most likely to happen?',
-        options: [
-          'They will definitely develop refeeding syndrome',
-          'They are less likely to experience severe complications',
-          'Their metabolism will stop changing',
-          'They will not need carbohydrates'
-        ],
-        correctAnswer: 'They are less likely to experience severe complications'
-      },
-      {
-        id: 't1q5',
-        type: 'critical',
-        text: 'Which process is MOST directly responsible for the complications of refeeding syndrome?',
-        options: [
-          'Increased fat breakdown',
-          'Decreased heart rate',
-          'Rapid electrolyte shifts during renewed metabolism',
-          'Reduced oxygen intake'
-        ],
-        correctAnswer: 'Rapid electrolyte shifts during renewed metabolism'
-      }
+    id: 'refeeding-main',
+    topic: 'refeeding_syndrome',
+    version: 'A',
+    content: `Refeeding syndrome can occur when someone who has not eaten enough for a long time starts eating again. During starvation, the body changes how it gets energy, and some important minerals may become low.
+When food is eaten again, the body reacts, and these minerals may move quickly, which can cause health problems like heart issues, muscle weakness, or confusion. Many patients might face these problems if care is not taken. Doctors usually give small amounts of food, check the body, and sometimes give supplements. Watching how the body responds can help reduce risks, though the exact causes are not always explained.`,
+    sentences: [
+      { id: '1', text: 'Refeeding syndrome can occur when someone who has not eaten enough for a long time starts eating again.' },
+      { id: '2', text: 'During starvation, the body changes how it gets energy, and some important minerals may become low.' },
+      { id: '3', text: 'When food is eaten again, the body reacts, and these minerals may move quickly, which can cause health problems like heart issues, muscle weakness, or confusion.' },
+      { id: '4', text: 'Many patients might face these problems if care is not taken.' },
+      { id: '5', text: 'Doctors usually give small amounts of food, check the body, and sometimes give supplements.' },
+      { id: '6', text: 'Watching how the body responds can help reduce risks, though the exact causes are not always explained.' }
     ]
   },
   {
-    id: 'topic2',
-    title: 'Mount Tambora Eruption',
-    texts: {
-      human: {
-        id: 't2h',
-        title: 'Mount Tambora (Human)',
-        type: 'human',
-        content: `The eruption of Mount Tambora in Indonesia in 1815 triggered a change in the global climate. The heavier material fell to the ground and the ocean’s surface. However, when lighter particulates reached the stratosphere, they spread out and created an aerosol cloud the size of Australia.The cloud blocked sunlight from reaching the earth and changed the global climate by 2-7 degrees Fahrenheit, the effects of which devastated much of the world in what should have been the summer of 1816. Crops failed across Europe and the U.S. due to the cold or lack of sunshine causing grain and oat prices to soar, torrential rains flooded crops in Ireland, novel strains of cholera killed millions in India, crime became rampant, and people starved in many countries. Early European settlers were drawn to the temperate climate of the eastern U.S. as spring rains and summer warmth created the perfect recipe for productive farming. Plentiful yields fed them throughout the bitter winters and were key to their survival. But in 1816, summer never came to the New England states. May frost killed off most of the crops in New York, Massachusetts, New Hampshire, and Vermont. In June, heavy snow smothered the ground in Albany, New York and Dennysville, Maine, while frost persisted for five consecutive nights in Cape May, New Jersey. The relentless cold weather extended into late summer, in what would have normally been harvest season. In July, lakes and rivers remained frozen as far south as northwestern Pennsylvania, while frost remained in Virginia into late August. Temperatures dipped from above-normal summer temperatures to near-freezing within mere hours. All because of a volcanic eruption on the other side of the world.`
-      },
-      ai: {
-        id: 't2a',
-        title: 'Mount Tambora (AI)',
-        type: 'ai',
-        content: `The 1815 eruption of Mount Tambora had far-reaching effects on Earth’s climate. While heavier volcanic debris settled quickly, lighter particles rose into the upper atmosphere and formed an aerosol cloud that spread across the globe. This cloud reduced the amount of sunlight reaching the Earth, leading to a significant drop in global temperatures.As a result, the year 1816 experienced severe and unusual weather conditions. Crops failed in many regions due to cold temperatures and insufficient sunlight, causing food prices to rise and contributing to widespread hunger. In some areas, flooding and disease further worsened living conditions. In the eastern United States, where agriculture depended on predictable seasonal weather, the disruption was especially damaging. Frost, snow, and prolonged cold temperatures occurred during months that were normally warm, destroying crops and preventing normal harvests. These extreme conditions, all linked to the volcanic eruption, created widespread hardship across multiple continents.`
-      }
-    },
-    questions: [
-      {
-        id: 't2q1',
-        type: 'comprehension',
-        text: 'How did the volcanic eruption lead to widespread starvation?',
-        options: [
-          'Lava directly destroyed farms worldwide',
-          'The eruption reduced sunlight, which led to crop failure',
-          'The eruption increased rainfall everywhere',
-          'The eruption caused immediate temperature increases'
-        ],
-        correctAnswer: 'The eruption reduced sunlight, which led to crop failure'
-      },
-      {
-        id: 't2q2',
-        type: 'inference',
-        text: 'Why did a volcanic eruption in Indonesia affect regions like Europe and the United States?',
-        options: [
-          'Because lava traveled across continents',
-          'Because people spread the effects through trade',
-          'Because particles in the atmosphere spread globally',
-          'Because oceans carried heat away'
-        ],
-        correctAnswer: 'Because particles in the atmosphere spread globally'
-      },
-      {
-        id: 't2q3',
-        type: 'critical',
-        text: 'What was the key factor that caused temperatures to drop after the eruption?',
-        options: [
-          'Increased ocean currents',
-          'Blocked sunlight from atmospheric particles',
-          'Increased wind speeds',
-          'Reduced volcanic activity'
-        ],
-        correctAnswer: 'Blocked sunlight from atmospheric particles'
-      },
-      {
-        id: 't2q4',
-        type: 'critical',
-        text: 'If a similar eruption happened today, which sector would MOST likely be immediately affected?',
-        options: [
-          'Space exploration',
-          'Agriculture',
-          'Internet communication',
-          'Transportation laws'
-        ],
-        correctAnswer: 'Agriculture'
-      },
-      {
-        id: 't2q5',
-        type: 'critical',
-        text: 'Why were early settlers in the eastern United States especially vulnerable to the climate changes?',
-        options: [
-          'They relied heavily on consistent seasonal farming',
-          'They had advanced food storage systems',
-          'They imported most of their food',
-          'They lived in warmer climates year-round'
-        ],
-        correctAnswer: 'They relied heavily on consistent seasonal farming'
-      }
+    id: 'summer-1816',
+    topic: 'year_without_summer',
+    version: 'A',
+    content: `The Year Without a Summer refers to 1816, when unusual weather caused problems for many regions in Europe and North America. During this time, crops did not grow well, and people faced food shortages. The event has often been linked to a volcanic eruption that happened earlier.
+The eruption released ash into the atmosphere, and this affected the environment in different ways. After that, many regions experienced colder weather, unusual rain, and difficulties with farming. These changes made it harder for people to produce food and maintain stable living conditions.
+Many historical accounts describe rising food prices and hardship among populations. In some places, people struggled to find enough food, and social conditions became more difficult. This event is often remembered as an example of how natural events can influence human societies, although the exact processes are not always clearly described.`,
+    sentences: [
+      { id: '1', text: 'The Year Without a Summer refers to 1816, when unusual weather caused problems for many regions in Europe and North America.' },
+      { id: '2', text: 'During this time, crops did not grow well, and people faced food shortages.' },
+      { id: '3', text: 'The event has often been linked to a volcanic eruption that happened earlier.' },
+      { id: '4', text: 'The eruption released ash into the atmosphere, and this affected the environment in different ways.' },
+      { id: '5', text: 'After that, many regions experienced colder weather, unusual rain, and difficulties with farming.' },
+      { id: '6', text: 'These changes made it harder for people to produce food and maintain stable living conditions.' },
+      { id: '7', text: 'Many historical accounts describe rising food prices and hardship among populations.' },
+      { id: '8', text: 'In some places, people struggled to find enough food, and social conditions became more difficult.' },
+      { id: '9', text: 'This event is often remembered as an example of how natural events can influence human societies, although the exact processes are not always clearly described.' }
     ]
+  }
+];
+
+export const QUESTIONS: Question[] = [
+  {
+    id: 'q1',
+    textId: 'refeeding-main',
+    type: 'MC',
+    instruction: 'Which sentence best describes the full causal chain of mineral depletion leading to health problems?',
+    options: [
+      '“During starvation, the body changes how it gets energy, and some important minerals may become low.”',
+      '“When food is eaten again, the body reacts, and these minerals may move quickly, which can cause health problems like heart issues, muscle weakness, or confusion.”',
+      '“Doctors usually give small amounts of food, check the body, and sometimes give supplements.”',
+      '“Paying attention to how the body responds can help reduce risks.”'
+    ],
+    correctAnswer: 1,
+    reasoning: 'Only B clearly connects mineral movement to health problems. A mentions mineral loss but does not explain consequences; C and D describe interventions or general advice, not causality.'
+  },
+  {
+    id: 'q2',
+    textId: 'refeeding-main',
+    type: 'MC',
+    instruction: 'Which option best describes how the text explains the concept of “minerals”?',
+    options: [
+      'The text clearly explains which minerals are involved and their function.',
+      'The text mentions minerals but does not explain what they do.',
+      'The text does not mention minerals at all.'
+    ],
+    correctAnswer: 1,
+    reasoning: 'The text mentions minerals but does not explain their roles in the body, so the concept is referenced but not clarified.'
+  },
+  {
+    id: 'q3',
+    textId: 'refeeding-main',
+    type: 'CLICK_SENTENCE',
+    instruction: 'Click the sentence(s) in the text that lack necessary quantitative data to support the risk claims.',
+    correctAnswer: ['4'],
+    reasoning: 'This sentence claims risk but does not provide percentages, studies, or specific evidence. Users can also click other sentences mentioning “risks” without numbers to receive partial credit.'
+  },
+  {
+    id: 'q4',
+    textId: 'refeeding-main',
+    type: 'CLICK_PAIR',
+    instruction: 'Click the pair of sentences that have a logical jump or missing connection.',
+    correctAnswer: ['3', '5'],
+    reasoning: 'The text jumps from mineral movement to intervention without explaining why or how the intervention addresses the previous problem. Users can also mark other logical gaps.'
+  },
+  {
+    id: 'q5',
+    textId: 'refeeding-main',
+    type: 'CLICK_SENTENCE',
+    instruction: 'Click the sentence(s) that omit key information necessary to understand the cause-and-effect fully.',
+    correctAnswer: ['2'],
+    reasoning: 'This sentence mentions mineral loss but does not explain why minerals decrease, what triggers the change, or the consequences. Users can mark additional sentences they believe are missing key information for partial credit.'
+  },
+  // New Article: Year Without a Summer
+  {
+    id: 's1',
+    textId: 'summer-1816',
+    type: 'MC',
+    instruction: 'Which sentence best explains the cause-and-effect relationship behind the unusual weather during the Year Without a Summer?',
+    options: [
+      '“In 1816, many regions experienced cold temperatures and crop failures.”',
+      '“A volcanic eruption released large amounts of ash into the atmosphere, which blocked sunlight and caused global temperatures to drop.”',
+      '“People faced food shortages and economic difficulties.”',
+      '“The event is remembered as an unusual historical period.”'
+    ],
+    correctAnswer: 1,
+    reasoning: 'Only B clearly connects the cause (volcanic eruption) to the effect (blocked sunlight → temperature drop). The others describe outcomes or general context without causal explanation.'
+  },
+  {
+    id: 's2',
+    textId: 'summer-1816',
+    type: 'MC',
+    instruction: 'How does the text explain the concept of “ash in the atmosphere”?',
+    options: [
+      'The text clearly explains what ash is and how it affects sunlight and temperature.',
+      'The text mentions ash but does not clearly explain how it affects the climate.',
+      'The text does not mention ash or the atmosphere at all.'
+    ],
+    correctAnswer: 1,
+    reasoning: 'In the weaker version, ash is mentioned but its mechanism (blocking sunlight, affecting radiation) is not clearly explained, so the concept is referenced but not clarified.'
+  },
+  {
+    id: 's3',
+    textId: 'summer-1816',
+    type: 'CLICK_SENTENCE',
+    instruction: 'Click the sentence(s) that make claims about impact or severity without providing specific data or evidence.',
+    correctAnswer: ['7', '8'],
+    reasoning: 'These sentences describe rising food prices, hardship, and struggling for food, but provide no numbers, dates, or measurable evidence (e.g., crop yield percentages, death rates).'
+  },
+  {
+    id: 's4',
+    textId: 'summer-1816',
+    type: 'CLICK_PAIR',
+    instruction: 'Click the pair of sentences where there is a logical jump or missing explanation between them.',
+    correctAnswer: ['4', '5'],
+    reasoning: 'The connection is incomplete because the text does not explain how ash leads to cooling (missing step: blocking sunlight → reduced temperature). This creates a logical gap in the chain of reasoning.'
+  },
+  {
+    id: 's5',
+    textId: 'summer-1816',
+    type: 'CLICK_SENTENCE',
+    instruction: 'Click the sentence(s) that omit key information needed to fully understand the event.',
+    correctAnswer: ['4'],
+    reasoning: 'This sentence identifies an event but does not specify which volcano, when it happened, or how much ash was released. It lacks essential details needed for full understanding.'
   }
 ];

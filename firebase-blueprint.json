@@ -1,53 +1,65 @@
 {
   "entities": {
-    "SurveyResult": {
-      "title": "Survey Result",
-      "description": "A completed survey from a participant.",
+    "Assessment": {
+      "title": "Assessment",
+      "description": "A critical thinking assessment result.",
       "type": "object",
       "properties": {
-        "participantId": { "type": "string" },
-        "timestamp": { "type": "string", "format": "date-time" },
-        "responses": {
+        "userId": { "type": "string" },
+        "textId": { "type": "string" },
+        "textVersion": { "type": "string", "enum": ["A", "B", "C"] },
+        "annotationCount": { "type": "number" },
+        "problemDistribution": { "type": "object" },
+        "scores": {
+          "type": "object",
+          "properties": {
+            "L1": { "type": "number" },
+            "L2": { "type": "number" },
+            "L3": { "type": "number" },
+            "L4": { "type": "number" }
+          }
+        },
+        "totalScore": { "type": "number" },
+        "thinkingLevel": { "type": "string", "enum": ["Developing", "Proficient", "Advanced"] },
+        "submittedAt": { "type": "string", "format": "date-time" },
+        "demographics": { "$ref": "Demographics" }
+      },
+      "required": ["userId", "textId", "textVersion", "annotationCount", "problemDistribution", "scores", "totalScore", "thinkingLevel", "submittedAt", "demographics"]
+    },
+    "Annotation": {
+      "title": "Annotation",
+      "description": "A single sentence annotation.",
+      "type": "object",
+      "properties": {
+        "assessmentId": { "type": "string" },
+        "userId": { "type": "string" },
+        "textId": { "type": "string" },
+        "sentenceId": { "type": "string" },
+        "textSpan": { "type": "string" },
+        "problems": {
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
-              "topicId": { "type": "string" },
-              "textType": { "type": "string", "enum": ["ai", "human"] },
-              "nasaTlx": {
-                "type": "object",
-                "properties": {
-                  "fluency": { "type": "number" },
-                  "cognitiveLoad": { "type": "number" },
-                  "trust": { "type": "number" }
-                }
-              },
-              "answers": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "questionId": { "type": "string" },
-                    "answer": { "type": "string" },
-                    "isCorrect": { "type": "boolean" },
-                    "type": { "type": "string" }
-                  }
-                }
-              }
+              "category": { "type": "string", "enum": ["EVIDENCE", "LOGIC", "ASSUMPTION", "SCOPE", "MISSING_INFO", "VAGUE"] },
+              "reason": { "type": "string" }
             }
           }
         },
-        "demographics": {
-          "type": "object",
-          "properties": {
-            "age": { "type": "string" },
-            "gender": { "type": "string" },
-            "raceEthnicity": { "type": "string" }
-          },
-          "required": ["age", "gender", "raceEthnicity"]
-        }
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["participantId", "timestamp", "responses", "demographics"]
+      "required": ["assessmentId", "userId", "textId", "sentenceId", "textSpan", "problems", "createdAt", "updatedAt"]
+    },
+    "Demographics": {
+      "title": "Demographics",
+      "type": "object",
+      "properties": {
+        "age": { "type": "string" },
+        "gender": { "type": "string" },
+        "raceEthnicity": { "type": "string" }
+      },
+      "required": ["age", "gender", "raceEthnicity"]
     },
     "User": {
       "title": "User",
@@ -62,9 +74,13 @@
     }
   },
   "firestore": {
-    "/surveyResults/{resultId}": {
-      "schema": "SurveyResult",
-      "description": "Collection of all survey results."
+    "/assessments/{assessmentId}": {
+      "schema": "Assessment",
+      "description": "Collection of all assessments."
+    },
+    "/annotations/{annotationId}": {
+      "schema": "Annotation",
+      "description": "Collection of all annotations."
     },
     "/users/{userId}": {
       "schema": "User",
